@@ -36,17 +36,18 @@ singleTailCriticalTValue :: Float -> Int -> Float
 singleTailCriticalTValue significance df = realToFrac $ quantile (studentT $ fromIntegral df) (1 - realToFrac significance)
   -- where alpha = realToFrac $ confLvl + ((1 - confLvl) / 2)
 
-confidenceInterval :: Float -> Int -> Float -> Float -> (Float,Float)
-confidenceInterval confLvl degOfFreedom avg avgErr = (lowerBound, upperBound)
-  where tc = singleTailCriticalTValue confLvl degOfFreedom                       -- WRONG! you need double tail
-        lowerBound = avg - tc * avgErr
-        upperBound = avg + tc * avgErr
+doubleTailCriticalTValue :: Float -> Int -> Float
+doubleTailCriticalTValue confidence df = realToFrac $ q1 - q2
+  where q1 = quantile (studentT $ fromIntegral df) (realToFrac confidence)
+        q2 = quantile (studentT $ fromIntegral df) (1 - realToFrac confidence)
 
 
 simpleParser :: String -> [[Float]]
 simpleParser = filter (not . null) . map (map read) . (map words) . lines
 
 
+-- ConidenceInterval <confidence level>
+-- SignificanceTest <expected value> <significance>
 data TTest = ConfidenceInterval Float | SignificanceTest Float Float
 
 
@@ -97,12 +98,15 @@ processFile path parseContents processData calcErrors bestEstimate units scaleFa
             tc = singleTailCriticalTValue significance degOfFreedom
             p0 = cumulative (studentT $ fromIntegral degOfFreedom) (realToFrac t0)
             pc = cumulative (studentT $ fromIntegral degOfFreedom) (realToFrac $ -tc)
-        putStrLn $ "\nStatistical Significance at " ++ (show $ 100 * significance) ++ "% for expected value of " ++ (show expectedValue)
+        putStrLn $ "\nStatistical Significance at " ++ (show $ 100 * significance) ++ "% for expected value of " ++ (show expectedValue) ++ ":"
         putStrLn $ "t0:  P(-inf <= " ++ (show t0) ++ ") = " ++ (show $ 100 * p0) ++ "%"
         putStrLn $ "t_c: P(-inf <= -" ++ (show tc) ++ ") = " ++ (show $ 100 * pc) ++ "%" -- just to check: P(<=tc) should be equal to significance
-      ConfidenceInterval _ -> putStrLn "\nConfidence Inerval: Not yet implemented"
-        -- putStrLn "\nConfidence Level:"
-        -- putStrLn $ (show tc) ++ " " ++ (show $ 100 * confLvl) ++ "% " ++ (show interval)
+      ConfidenceInterval confidence -> do
+        let tc = doubleTailCriticalTValue confidence degOfFreedom
+            lowerBound = avg - tc * err
+            upperBound = avg + tc * err
+        putStrLn $ "\nMargins of error for confidence level of " ++ (show $ 100 * confidence) ++ "%:"
+        putStrLn $ "(" ++ (show $ scaleFactor * lowerBound) ++ ", " ++ (show $ scaleFactor * upperBound) ++ ")"
 
     -- return results of calculations
     return (avg, err))
@@ -111,10 +115,12 @@ processFile path parseContents processData calcErrors bestEstimate units scaleFa
 
 -- ..:: Entry Point ::..
 
+-- NOTE: changing t-test significance from 5% to 1% for refraction index produces the same exact result
+
 main :: IO ()
 main = do
   (lambda, lambdaErr) <- processFile "./data/misure_lambda.csv"      (simpleParser) (calcLambdas)         (calcLambdaErrors)             (weightedAverage) "nm" (10**6) (SignificanceTest (632.816 * 10**(-6)) 0.05)
-  (_, _)              <- processFile "./data/misure_n.csv"           (simpleParser) (calcRefIndex lambda) (calcRefIndexErrors lambdaErr) (weightedAverage) ""   (1)        (SignificanceTest 1.0003 0.05)
+  (_, _)              <- processFile "./data/misure_n.csv"           (simpleParser) (calcRefIndex lambda) (calcRefIndexErrors lambdaErr) (weightedAverage) ""   (1)     (SignificanceTest 1.0003 0.01)
   (_, _)              <- processFile "./data/misure_luce_bianca.csv" (simpleParser) (calcWhiteLights)     (calcWhiteLightErrors)         (weightedAverage) "um" (10**3) (ConfidenceInterval 0.95)
   (_, _)              <- processFile "./data/misure_sodio.csv"       (simpleParser) (calcSodiumSeps)      (calcSodiumSepErrors)          (stdAverage)      "A"  (10**7) (SignificanceTest (6 * 10**(-7)) 0.05)
   return ()

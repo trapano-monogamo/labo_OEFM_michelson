@@ -13,7 +13,7 @@ Results:
 Final Measure:
 633.14655 +- 8.168711 nm
 
-Statistical Significance at 5.0% for expected value of 6.32816e-4
+Statistical Significance at 5.0% for expected value of 6.32816e-4:
 t0:  P(-inf <= 4.0466767e-2) = 51.54830280747515%
 t_c: P(-inf <= -1.9431803) = 4.99999970793561%
 
@@ -30,9 +30,9 @@ Results:
 Final Measure:
 1.0002658 +- 1.4002449e-6 
 
-Statistical Significance at 5.0% for expected value of 1.0003
+Statistical Significance at 1.0% for expected value of 1.0003:
 t0:  P(-inf <= -24.433632) = 1.0704612805579693e-4%
-t_c: P(-inf <= -2.0150483) = 5.0000006882135715%
+t_c: P(-inf <= -3.36493) = 1.0000000921243495%
 
 [*] Processing ./data/misure_luce_bianca.csv
 
@@ -47,23 +47,24 @@ Results:
 Final Measure:
 50.0 +- 0.8164966 um
 
-Confidence Inerval: Not yet implemented
+Margins of error for confidence level of 95.0%:
+(46.709442, 53.29056)
 
 [*] Processing ./data/misure_sodio.csv
 
 Results:
-7.2348843 +- -1.0231672e-2 A
-6.431009 +- -9.09482e-3 A
-7.311042 +- -1.0339375e-2 A
-5.8661246 +- -8.295953e-3 A
-6.291204 +- -8.897106e-3 A
-6.1053877 +- -8.634322e-3 A
-5.826754 +- -8.240274e-3 A
-6.2013297 +- -8.770005e-3 A
+7.2348843 +- 1.0231672e-2 A
+6.431009 +- 9.09482e-3 A
+7.311042 +- 1.0339375e-2 A
+5.8661246 +- 8.295953e-3 A
+6.291204 +- 8.897106e-3 A
+6.1053877 +- 8.634322e-3 A
+5.826754 +- 8.240274e-3 A
+6.2013297 +- 8.770005e-3 A
 
 Final Measure:
 6.408467 +- 0.20174035 A
 
-Statistical Significance at 5.0% for expected value of 6.0e-7
+Statistical Significance at 5.0% for expected value of 6.0e-7:
 t0:  P(-inf <= 2.0247142) = 95.87229342876843%
 t_c: P(-inf <= -1.8945786) = 5.000000213197447%

@@ -12,5 +12,5 @@ calcSodiumSeps = map op
 
 calcSodiumSepErrors :: [[Float]] -> [Float]
 calcSodiumSepErrors = map op
-  where op (m:x1:x2:[]) = - (micrometerError * sqrt 2) * m * (avgSodiumLambda ** 2) * 5 / (2 * (x2 - x1)) 
+  where op (m:x1:x2:[]) = (micrometerError * sqrt 2) * m * (avgSodiumLambda ** 2) * 5 / (2 * (x2 - x1)) 
         op _            = 0
