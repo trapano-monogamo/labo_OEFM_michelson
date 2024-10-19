@@ -1,0 +1,68 @@
+
+[*] Processing ./data/misure_lambda.csv
+
+Results:
+6.46154e-4 +- 2.1757132e-5 mm
+6.249994e-4 +- 2.2097087e-5 mm
+6.15384e-4 +- 2.1757132e-5 mm
+6.15384e-4 +- 2.1757132e-5 mm
+6.268658e-4 +- 2.1107664e-5 mm
+6.015032e-4 +- 2.1266369e-5 mm
+
+Final Measure:
+6.215963e-4 +- 8.82467e-6 mm
+
+Statistical Significance at 5.0% for expected value of 6.32816e-4
+t0:  P(-inf <= -1.2714019) = 12.97585737851408%
+t_c: P(-inf <= -2.0150483) = 5.0000006882135715%
+
+[*] Processing ./data/misure_n.csv
+
+Results:
+1.0002611 +- 3.7063612e-6 
+1.0002611 +- 3.7063612e-6 
+1.0002611 +- 3.7063612e-6 
+1.0002673 +- 3.7946081e-6 
+1.0002549 +- 3.6181145e-6 
+1.0002611 +- 3.7063612e-6 
+
+Final Measure:
+1.000261 +- 1.5126866e-6 
+
+Statistical Significance at 5.0% for expected value of 1.0003
+t0:  P(-inf <= -25.848478) = 8.093935967789906e-5%
+t_c: P(-inf <= -2.0150483) = 5.0000006882135715%
+
+[*] Processing ./data/misure_luce_bianca.csv
+
+Results:
+4.7999956e-2 +- 2.0e-3 mm
+5.2000046e-2 +- 2.0e-3 mm
+4.7999956e-2 +- 2.0e-3 mm
+4.7999956e-2 +- 2.0e-3 mm
+5.2000046e-2 +- 2.0e-3 mm
+5.2000046e-2 +- 2.0e-3 mm
+
+Final Measure:
+5.0e-2 +- 8.164966e-4 mm
+
+Confidence Inerval: Not yet implemented
+
+[*] Processing ./data/misure_sodio.csv
+
+Results:
+7.234884e-7 +- -1.0231672e-9 mm
+6.4310086e-7 +- -9.0948205e-10 mm
+7.311042e-7 +- -1.0339375e-9 mm
+5.866125e-7 +- -8.2959534e-10 mm
+6.291204e-7 +- -8.8971064e-10 mm
+6.105388e-7 +- -8.6343227e-10 mm
+5.826754e-7 +- -8.2402746e-10 mm
+6.20133e-7 +- -8.7700047e-10 mm
+
+Final Measure:
+6.408467e-7 +- 2.0174035e-8 mm
+
+Statistical Significance at 5.0% for expected value of 6.0e-7
+t0:  P(-inf <= 2.0247142) = 95.87229342876843%
+t_c: P(-inf <= -1.8945786) = 5.000000213197447%

@@ -37,10 +37,10 @@ singleTailCriticalTValue significance df = realToFrac $ quantile (studentT $ fro
   -- where alpha = realToFrac $ confLvl + ((1 - confLvl) / 2)
 
 confidenceInterval :: Float -> Int -> Float -> Float -> (Float,Float)
-confidenceInterval confLvl degOfFreedom mean meanErr = (lowerBound, upperBound)
+confidenceInterval confLvl degOfFreedom avg avgErr = (lowerBound, upperBound)
   where tc = singleTailCriticalTValue confLvl degOfFreedom                       -- WRONG! you need double tail
-        lowerBound = mean - tc * meanErr
-        upperBound = mean + tc * meanErr
+        lowerBound = avg - tc * avgErr
+        upperBound = avg + tc * avgErr
 
 
 simpleParser :: String -> [[Float]]
@@ -52,18 +52,21 @@ data TTest = ConfidenceInterval Float | SignificanceTest Float Float
 
 -- How can I make this usable for other data analysis programs?
 -- Look into algeraic data types to generalize a "parser" and the operators on the dataset
-processFile :: String ->                              -- filename
-              (String -> [[Float]]) ->                -- parser
-              ([[Float]] -> [Float]) ->               -- operation on dataset
-              ([[Float]] -> [Float]) ->               -- dataset errors
-              ([(Float,Float)] -> (Float,Float)) ->   -- avg+-err statistical estimator
-              String ->                               -- measurement units
-              TTest ->                                -- t-test
-              IO (Float, Float)                       -- return (avg,err)
+processFile :: String ->                               -- filename
+               (String -> [[Float]]) ->                -- parser
+               ([[Float]] -> [Float]) ->               -- operation on dataset
+               ([[Float]] -> [Float]) ->               -- dataset errors
+               ([(Float,Float)] -> (Float,Float)) ->   -- avg+-err statistical estimator
+               String ->                               -- measurement units
+               TTest ->                                -- t-test
+               IO (Float, Float)                       -- return (avg,err)
 processFile path parseContents processData calcErrors bestEstimate units ttest = do
-  putStr "\ESC[31m" -- red
+  {- ASNI colors:
+   - default: \ESC[0m
+   - red:     \ESC[31m
+   - green:   \ESC[32m
+   -}
   putStrLn $ "\n[*] Processing " ++ path
-  putStr "\ESC[0m" -- default
   withFile path ReadMode (\handle -> do
     -- read file, get the data and calculate stuff
     contents <- hGetContents handle
@@ -84,9 +87,10 @@ processFile path parseContents processData calcErrors bestEstimate units ttest =
       $ zip processedData errors
 
     putStrLn "\nFinal Measure:"
-    putStrLn $ "\ESC[32m" ++ (show avg) ++ " +- " ++ (show err) ++ " " ++ units ++ "\ESC[0m"
+    putStrLn $ (show avg) ++ " +- " ++ (show err) ++ " " ++ units
 
     case ttest of
+      -- consider implementing a way of testing against multiple significance levels
       SignificanceTest expectedValue significance -> do
         let t0 = (avg - expectedValue) / err
             tc = singleTailCriticalTValue significance degOfFreedom
