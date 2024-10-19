@@ -115,6 +115,6 @@ main :: IO ()
 main = do
   (lambda, lambdaErr) <- processFile "./data/misure_lambda.csv"      (simpleParser) (calcLambdas)         (calcLambdaErrors)             (weightedAverage) "nm" (10**6) (SignificanceTest (632.816 * 10**(-6)) 0.05)
   (_, _)              <- processFile "./data/misure_n.csv"           (simpleParser) (calcRefIndex lambda) (calcRefIndexErrors lambdaErr) (weightedAverage) ""   (1)        (SignificanceTest 1.0003 0.05)
-  (_, _)              <- processFile "./data/misure_luce_bianca.csv" (simpleParser) (calcWhiteLights)     (calcWhiteLightErrors)         (weightedAverage) "nm" (10**6) (ConfidenceInterval 0.95)
-  (_, _)              <- processFile "./data/misure_sodio.csv"       (simpleParser) (calcSodiumSeps)      (calcSodiumSepErrors)          (stdAverage)      "nm" (10**6) (SignificanceTest (6 * 10**(-7)) 0.05)
+  (_, _)              <- processFile "./data/misure_luce_bianca.csv" (simpleParser) (calcWhiteLights)     (calcWhiteLightErrors)         (weightedAverage) "um" (10**3) (ConfidenceInterval 0.95)
+  (_, _)              <- processFile "./data/misure_sodio.csv"       (simpleParser) (calcSodiumSeps)      (calcSodiumSepErrors)          (stdAverage)      "A"  (10**7) (SignificanceTest (6 * 10**(-7)) 0.05)
   return ()
