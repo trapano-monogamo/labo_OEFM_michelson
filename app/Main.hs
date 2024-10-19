@@ -58,9 +58,10 @@ processFile :: String ->                               -- filename
                ([[Float]] -> [Float]) ->               -- dataset errors
                ([(Float,Float)] -> (Float,Float)) ->   -- avg+-err statistical estimator
                String ->                               -- measurement units
+               Float ->                                -- scale factor
                TTest ->                                -- t-test
                IO (Float, Float)                       -- return (avg,err)
-processFile path parseContents processData calcErrors bestEstimate units ttest = do
+processFile path parseContents processData calcErrors bestEstimate units scaleFactor ttest = do
   {- ASNI colors:
    - default: \ESC[0m
    - red:     \ESC[31m
@@ -83,11 +84,11 @@ processFile path parseContents processData calcErrors bestEstimate units ttest =
 
     putStrLn "\nResults:"
     _ <- sequence $ map
-      (\(x,e) -> putStrLn $ (show x) ++ " +- " ++ (show e) ++ " " ++ units)
+      (\(x,e) -> putStrLn $ (show $ scaleFactor * x) ++ " +- " ++ (show $ scaleFactor * e) ++ " " ++ units)
       $ zip processedData errors
 
     putStrLn "\nFinal Measure:"
-    putStrLn $ (show avg) ++ " +- " ++ (show err) ++ " " ++ units
+    putStrLn $ (show $ scaleFactor * avg) ++ " +- " ++ (show $ scaleFactor * err) ++ " " ++ units
 
     case ttest of
       -- consider implementing a way of testing against multiple significance levels
@@ -112,8 +113,8 @@ processFile path parseContents processData calcErrors bestEstimate units ttest =
 
 main :: IO ()
 main = do
-  (lambda, lambdaErr) <- processFile "./data/misure_lambda.csv"      (simpleParser) (calcLambdas)         (calcLambdaErrors)             (weightedAverage) "mm" (SignificanceTest (632.816 * 10**(-6)) 0.05)
-  (_, _)              <- processFile "./data/misure_n.csv"           (simpleParser) (calcRefIndex lambda) (calcRefIndexErrors lambdaErr) (weightedAverage) ""   (SignificanceTest 1.0003 0.05)
-  (_, _)              <- processFile "./data/misure_luce_bianca.csv" (simpleParser) (calcWhiteLights)     (calcWhiteLightErrors)         (weightedAverage) "mm" (ConfidenceInterval 0.95)
-  (_, _)              <- processFile "./data/misure_sodio.csv"       (simpleParser) (calcSodiumSeps)      (calcSodiumSepErrors)          (stdAverage)      "mm" (SignificanceTest (6 * 10**(-7)) 0.05)
+  (lambda, lambdaErr) <- processFile "./data/misure_lambda.csv"      (simpleParser) (calcLambdas)         (calcLambdaErrors)             (weightedAverage) "nm" (10**6) (SignificanceTest (632.816 * 10**(-6)) 0.05)
+  (_, _)              <- processFile "./data/misure_n.csv"           (simpleParser) (calcRefIndex lambda) (calcRefIndexErrors lambdaErr) (weightedAverage) ""   (1)        (SignificanceTest 1.0003 0.05)
+  (_, _)              <- processFile "./data/misure_luce_bianca.csv" (simpleParser) (calcWhiteLights)     (calcWhiteLightErrors)         (weightedAverage) "nm" (10**6) (ConfidenceInterval 0.95)
+  (_, _)              <- processFile "./data/misure_sodio.csv"       (simpleParser) (calcSodiumSeps)      (calcSodiumSepErrors)          (stdAverage)      "nm" (10**6) (SignificanceTest (6 * 10**(-7)) 0.05)
   return ()
