@@ -101,7 +101,7 @@ processFile path parseContents processData calcErrors bestEstimate units scaleFa
             lowerBound = avg - tc * err
             upperBound = avg + tc * err
         putStrLn $ "\nMargins of error for confidence level of " ++ (show $ 100 * confidence) ++ "%:"
-        putStrLn $ "(" ++ (show $ scaleFactor * lowerBound) ++ ", " ++ (show $ scaleFactor * upperBound) ++ ")"
+        putStrLn $ "tc = " ++ (show tc) ++ ": (" ++ (show $ scaleFactor * lowerBound) ++ ", " ++ (show $ scaleFactor * upperBound) ++ ")"
 
     -- return results of calculations
     return (avg, err))
@@ -114,6 +114,6 @@ main :: IO ()
 main = do
   (lambda, lambdaErr) <- processFile "./data/misure_lambda.csv"      (simpleParser) (calcLambdas)         (calcLambdaErrors)             (weightedAverage) "nm" (10**6) (SignificanceTest (632.816 * 10**(-6)) 0.05)
   (_, _)              <- processFile "./data/misure_n.csv"           (simpleParser) (calcRefIndex lambda) (calcRefIndexErrors lambdaErr) (stdAverage)      ""   (1)     (ConfidenceInterval 0.95) -- 1.0002926
-  (_, _)              <- processFile "./data/misure_luce_bianca.csv" (simpleParser) (calcWhiteLights)     (calcWhiteLightErrors)         (weightedAverage) "um" (10**3) (ConfidenceInterval 0.95)
+  (_, _)              <- processFile "./data/misure_luce_bianca.csv" (simpleParser) (calcWhiteLights)     (calcWhiteLightErrors)         (stdAverage)      "um" (10**3) (ConfidenceInterval 0.95)
   (_, _)              <- processFile "./data/misure_sodio.csv"       (simpleParser) (calcSodiumSeps)      (calcSodiumSepErrors)          (stdAverage)      "A"  (10**7) (SignificanceTest (6 * 10**(-7)) 0.05)
   return ()
