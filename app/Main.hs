@@ -77,11 +77,6 @@ processFile path parseContents processData calcErrors bestEstimate units scaleFa
         errors = calcErrors rawData
         (avg, err) = bestEstimate $ zip processedData errors
         degOfFreedom = (length processedData) - 1 -- 1 because average is the only constraint
-        --interval = confidenceInterval 0.95 degOfFreedom avg err
-
-    -- output stuff
-    -- putStrLn "\nRaw data:"
-    -- _ <- sequence $ map print $ rawData
 
     putStrLn "\nResults:"
     _ <- sequence $ map
@@ -94,12 +89,12 @@ processFile path parseContents processData calcErrors bestEstimate units scaleFa
     case ttest of
       -- consider implementing a way of testing against multiple significance levels
       SignificanceTest expectedValue significance -> do
-        let t0 = (avg - expectedValue) / err
+        let t0 = (abs $ avg - expectedValue) / err
             tc = singleTailCriticalTValue significance degOfFreedom
-            p0 = cumulative (studentT $ fromIntegral degOfFreedom) (realToFrac t0)
+            p0 = cumulative (studentT $ fromIntegral degOfFreedom) (realToFrac $ -t0)
             pc = cumulative (studentT $ fromIntegral degOfFreedom) (realToFrac $ -tc)
-        putStrLn $ "\nStatistical Significance at " ++ (show $ 100 * significance) ++ "% for expected value of " ++ (show expectedValue) ++ ":"
-        putStrLn $ "t0:  P(-inf <= " ++ (show t0) ++ ") = " ++ (show $ 100 * p0) ++ "%"
+        putStrLn $ "\nStatistical Significance at " ++ (show $ 100 * significance) ++ "% for expected value of " ++ (show $ scaleFactor * expectedValue) ++ ":"
+        putStrLn $ "t0:  P(-inf <= -" ++ (show t0) ++ ") = " ++ (show $ 100 * p0) ++ "%"
         putStrLn $ "t_c: P(-inf <= -" ++ (show tc) ++ ") = " ++ (show $ 100 * pc) ++ "%" -- just to check: P(<=tc) should be equal to significance
       ConfidenceInterval confidence -> do
         let tc = doubleTailCriticalTValue confidence degOfFreedom
@@ -115,12 +110,10 @@ processFile path parseContents processData calcErrors bestEstimate units scaleFa
 
 -- ..:: Entry Point ::..
 
--- NOTE: changing t-test significance from 5% to 1% for refraction index produces the same exact result
-
 main :: IO ()
 main = do
   (lambda, lambdaErr) <- processFile "./data/misure_lambda.csv"      (simpleParser) (calcLambdas)         (calcLambdaErrors)             (weightedAverage) "nm" (10**6) (SignificanceTest (632.816 * 10**(-6)) 0.05)
-  (_, _)              <- processFile "./data/misure_n.csv"           (simpleParser) (calcRefIndex lambda) (calcRefIndexErrors lambdaErr) (weightedAverage) ""   (1)     (SignificanceTest 1.0003 0.01)
+  (_, _)              <- processFile "./data/misure_n.csv"           (simpleParser) (calcRefIndex lambda) (calcRefIndexErrors lambdaErr) (stdAverage)      ""   (1)     (ConfidenceInterval 0.95) -- 1.0002926
   (_, _)              <- processFile "./data/misure_luce_bianca.csv" (simpleParser) (calcWhiteLights)     (calcWhiteLightErrors)         (weightedAverage) "um" (10**3) (ConfidenceInterval 0.95)
   (_, _)              <- processFile "./data/misure_sodio.csv"       (simpleParser) (calcSodiumSeps)      (calcSodiumSepErrors)          (stdAverage)      "A"  (10**7) (SignificanceTest (6 * 10**(-7)) 0.05)
   return ()
